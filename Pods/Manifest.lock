@@ -14,9 +14,13 @@ PODS:
   - GoogleSymbolUtilities (1.1.1)
   - GoogleUtilities (1.3.1):
     - GoogleSymbolUtilities (~> 1.0)
+  - SDWebImage (3.8.1):
+    - SDWebImage/Core (= 3.8.1)
+  - SDWebImage/Core (3.8.1)
 
 DEPENDENCIES:
   - Google
+  - SDWebImage (~> 3.8)
 
 SPEC CHECKSUMS:
   FirebaseAnalytics: 0fd6532cb2c3d03cd5cf26ad295ccb091efd3104
@@ -25,7 +29,8 @@ SPEC CHECKSUMS:
   GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
   GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
   GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
+  SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
 
-PODFILE CHECKSUM: ed30dcc5e6803fe62b204760f575af23dd5e38e4
+PODFILE CHECKSUM: 77fcc5c633ac6a4bd429bd51ea85d5962078b58b
 
 COCOAPODS: 1.0.1

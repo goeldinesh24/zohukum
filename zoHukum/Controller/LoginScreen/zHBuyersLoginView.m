@@ -68,11 +68,16 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
 }
 
 -(IBAction)signInwithGoogle:(id)sender{
+    MBProgressHUD *loginwait = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    loginwait.labelText = @"Please Wait...";
     loginType = @"Google";
     [[GIDSignIn sharedInstance] signIn];
 }
 
 -(IBAction)signInwithfacebook:(id)sender{
+    MBProgressHUD *loginwait = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    loginwait.labelText = @"Please Wait...";
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
         [login logInWithReadPermissions:@[@"email"] fromViewController:self handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
@@ -116,28 +121,38 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
 
 
 -(void)callRegisterationdetailsBySocial:(NSMutableDictionary *)result{
+   
     if([loginType isEqualToString:@"Google"]){
-        NSMutableDictionary *sendtoserverrequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"login_via_google",@"section",[result valueForKey:@"email"],@"email",[result valueForKey:@"id"],@"user_id",[result valueForKey:@"first_name"],@"fname",[result valueForKey:@"last_name"],@"lname",[result valueForKey:@"gender"],@"gender",[result valueForKey:@"name"],@"user_name",@"20/12/1988",@"birthday",@"",@"profile_image_url", nil];
+        NSMutableDictionary *sendtoserverrequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"login_via_google",@"section",[result valueForKey:@"email"],@"email",[result valueForKey:@"userId"],@"user_id",[result valueForKey:@"fname"],@"fname",[result valueForKey:@"lname"],@"lname",[result valueForKey:@"gender"],@"gender",[result valueForKey:@"fullName"],@"user_name",@"20/12/1988",@"birthday",[result valueForKey:@"url"],@"profile_image_url", nil];
         
         [APIManager apiManager].delegate = self;
-        [[APIManager apiManager] fbloginWithDetailsfromServer:sendtoserverrequestData];
-
+        [[APIManager apiManager] GoogleloginWithDetailsfromServer:sendtoserverrequestData];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
     }else{
         NSMutableDictionary *sendtoserverrequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"login_via_facebook",@"section",[result valueForKey:@"email"],@"email",[result valueForKey:@"id"],@"user_id",[result valueForKey:@"first_name"],@"fname",[result valueForKey:@"last_name"],@"lname",[result valueForKey:@"gender"],@"gender",[result valueForKey:@"name"],@"user_name",@"20/12/1988",@"birthday", nil];
         
         [APIManager apiManager].delegate = self;
         [[APIManager apiManager] fbloginWithDetailsfromServer:sendtoserverrequestData];
-
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
     
 }
 -(void)getResponse:(NSMutableDictionary *)response serviceIdentifier:(NSString *)serviceIdentifier {
    dispatch_async(dispatch_get_main_queue(), ^{
     [[TWMessageBarManager sharedInstance] showMessageWithTitle:[response valueForKey:@"message"] description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+       [[NSUserDefaults standardUserDefaults]setValue:[response valueForKey:@"USER_ID"] forKey:@"USER_ID"];
+       [[NSUserDefaults standardUserDefaults]synchronize];
+       [self updateUserProfile:response];
    });
     NSLog(@"response%@",response);
-    
-    
+}
+
+-(void)updateUserProfile:(NSMutableDictionary *)responsedesc{
+    zhRegisterationViewController *storeRegisteration = [self.storyboard instantiateViewControllerWithIdentifier:@"zhRegisterationViewController"];
+    storeRegisteration.registerationType = @"UpdateProfile";
+    storeRegisteration.userInfoFromResponse = responsedesc;
+    [self.navigationController pushViewController:storeRegisteration animated:YES];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 - (void)getFailResponse:(NSError *)errObj serviceIdentifier:(NSString *)serviceIdentifier {
@@ -183,16 +198,15 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
 
 - (void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user
      withError:(NSError *)error {
-//    NSString *userId = user.userID;                  // For client-side use only!
-//    NSString *idToken = user.authentication.idToken; // Safe to send to the server
-//    NSString *fullName = user.profile.name;
-//    NSString *givenName = user.profile.givenName;
-//    NSString *familyName = user.profile.familyName;
-//    NSString *email = user.profile.email;
-//    NSURL *url = [user.profile imageURLWithDimension:100];
-    NSMutableDictionary *userGoogleDetails = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"",@"userId",@"",@"fullName",@"",@"email",@"",@"idToken",@"",@"",@"",@"url",nil];
-    [self Login:user.authentication.idToken];
-    //[self callRegisterationdetailsBySocial:userGoogleDetails];
+    NSString *userId = user.userID;                  // For client-side use only!
+    NSString *idToken = user.authentication.idToken; // Safe to send to the server
+    NSString *fullName = user.profile.name;
+    NSString *givenName = user.profile.givenName;
+    NSString *familyName = user.profile.familyName;
+    NSString *email = user.profile.email;
+    NSURL *url = [user.profile imageURLWithDimension:100];
+    NSMutableDictionary *userGoogleDetails = [[NSMutableDictionary alloc]initWithObjectsAndKeys:userId,@"userId",fullName,@"fullName",email,@"email",idToken,@"idToken",givenName,@"fname",url,@"url",familyName,@"lname",nil];
+    [self callRegisterationdetailsBySocial:userGoogleDetails];
     
 }
 
@@ -201,7 +215,7 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
     
     if ([AppDelegate connectedToNetwork]) {
         
-        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.googleapis.com/oauth2/v3/userinfo?access_token=%@",token]];
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.googleapis.com/oauth2/v2/userinfo"]];
         
         NSMutableURLRequest *request =
         [NSMutableURLRequest requestWithURL:url
@@ -227,7 +241,7 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
 
 -(IBAction)newRegisterationWithStore:(id)sender{
     zhRegisterationViewController *storeRegisteration = [self.storyboard instantiateViewControllerWithIdentifier:@"zhRegisterationViewController"];
-    storeRegisteration.registerationType = @"StoreRegisteration";
+    storeRegisteration.registerationType = @"BuyerRegisteration";
     [self.navigationController pushViewController:storeRegisteration animated:YES];
     
 }

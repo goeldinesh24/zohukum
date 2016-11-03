@@ -176,31 +176,37 @@
         case 0:
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
             MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+            MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
             break;
         case 1:
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
             MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
             break;
         case 2:
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
             MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
             break;
         case 3:
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
             MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
             break;
         case 4:
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
             MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
             break;
         case 5:
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+            //MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+            MenuDetailsViewController.categoryName = [_listofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
             break;
         case 6:
@@ -218,46 +224,42 @@
             [self.sideMenuController setContentViewController:destTVC];
             break;
         case 10:
-            destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];
-            [self.sideMenuController setContentViewController:destTVC];
-            break;
-        case 11:
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-latest-news.html";
             multisupportView.navigationTittleString = @"latest-news";
             [self.sideMenuController setContentViewController:multisupportView];
             break;
-        case 12:
+        case 11:
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-how-it-works.html";
             multisupportView.navigationTittleString = @"How it works";
             [self.sideMenuController setContentViewController:multisupportView];
             break;
-        case 13:
+        case 12:
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-shipping-return.html";
             multisupportView.navigationTittleString = @"Shipping and returns";
             [self.sideMenuController setContentViewController:multisupportView];
             break;
-        case 14:
+        case 13:
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-Privacy-Policy-7.html";
             multisupportView.navigationTittleString = @"Privacy Policy";
             [self.sideMenuController setContentViewController:multisupportView];
             break;
-        case 15:
+        case 14:
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-Terms-and-Conditions-5.html";
             multisupportView.navigationTittleString = @"Terms & Condition";
             [self.sideMenuController setContentViewController:multisupportView];
             break;
-        case 16:
+        case 15:
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-faq.html";
             multisupportView.navigationTittleString = @"Frequently asked question";
             [self.sideMenuController setContentViewController:multisupportView];
             break;
-        case 17:
+        case 16:
             exit(0);
             break;
         default:
@@ -265,9 +267,7 @@
             [self.sideMenuController setContentViewController:destTVC];
             break;
     }
-    //[self.sideMenuController setContentViewController:multisupportView];
-
-    //
+    
 }
 
 @end

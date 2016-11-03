@@ -9,6 +9,7 @@
 #import "MultiSupportWebViewController.h"
 #import "ZHMainViewController.h"
 #import "MBProgressHUD.h"
+#import "BuyerSliderMenu.h"
 
 @interface MultiSupportWebViewController ()
 

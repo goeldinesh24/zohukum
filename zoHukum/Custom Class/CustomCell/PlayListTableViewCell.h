@@ -13,5 +13,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *titleNews;
 @property (weak, nonatomic) IBOutlet UILabel *descNews;
 @property (weak, nonatomic) IBOutlet UIView *middleView;
-
+@property (weak, nonatomic) IBOutlet UILabel *weight;
+@property (weak, nonatomic) IBOutlet UIButton *price;
+@property (weak, nonatomic) IBOutlet UILabel *type;
+@property (weak, nonatomic) IBOutlet UILabel *brand;
 @end

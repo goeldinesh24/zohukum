@@ -2,7 +2,7 @@
 //  MMCollectionViewController.h
 //  ObjCPlayStand
 //
-//  Created by Mukesh on 07/01/16.
+//  Created by vivek on 07/01/16.
 //  Copyright © 2016 Mad Apps. All rights reserved.
 //
 

@@ -11,8 +11,10 @@
 #import "APIManager.h"
 @interface zhRegisterationViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,NIDropDownDelegate,UITextFieldDelegate,ZHApiManagerDelegate>{
      NIDropDown *dropDown;
+   
 }
 @property(strong,nonatomic)IBOutlet UITableView *registerationTableView;
+@property(strong,nonatomic)IBOutlet NSMutableDictionary *userInfoFromResponse;
 @property(strong,nonatomic)IBOutlet UITextField *mobileNo;
 @property(strong,nonatomic)IBOutlet UITextField *otp;
 @property(strong,nonatomic)IBOutlet UIButton *getOTP;

@@ -44,7 +44,7 @@
     
     _tableView.tableHeaderView = clearView;
     [self.tableView registerNib:[UINib nibWithNibName:@"PlayListTableViewCell" bundle:nil] forCellReuseIdentifier:@"PlayListCell"];
-    self.tableView.rowHeight = 109;
+    self.tableView.rowHeight = 177;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.decelerationRate =  UIScrollViewDecelerationRateFast;

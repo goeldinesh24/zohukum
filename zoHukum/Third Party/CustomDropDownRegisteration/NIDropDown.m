@@ -60,15 +60,20 @@
         table.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         table.separatorColor = [UIColor grayColor];
         
+        int tableViewHeight = (int)[self.list count]*40;
+        if (tableViewHeight > 400) {
+            tableViewHeight = 400;
+        }
+        
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.5];
         if ([direction isEqualToString:@"up"]) {
-            self.frame = CGRectMake(btn.origin.x, btn.origin.y-*height, btn.size.width, *height);
+            self.frame = CGRectMake(btn.origin.x, btn.origin.y-*height, btn.size.width, tableViewHeight);
         } else if([direction isEqualToString:@"down"]) {
-            self.frame = CGRectMake(btn.origin.x, b.superview.superview.frame.origin.y+b.frame.size.height, btn.size.width, *height);
+            self.frame = CGRectMake(btn.origin.x, b.superview.superview.frame.origin.y+b.frame.size.height, btn.size.width, tableViewHeight);
         }
         
-        table.frame = CGRectMake(b.frame.origin.x, b.superview.superview.frame.origin.y+b.frame.size.height+3, b.frame.size.width, *height);
+        table.frame = CGRectMake(b.frame.origin.x, b.superview.superview.frame.origin.y+b.frame.size.height+3, b.frame.size.width, tableViewHeight);
         [UIView commitAnimations];
         [b addSubview:self];
         [b.superview.superview.superview.superview addSubview:table];

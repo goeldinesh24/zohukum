@@ -2,117 +2,215 @@
 //  ViewController.m
 //  ObjCPlayStand
 //
-//  Created by Mukesh on 05/01/16.
+//  Created by vivek on 05/01/16.
 //  Copyright © 2016 Mad Apps. All rights reserved.
 //
 
 #import "ViewController.h"
 #import "MMContainerViewController.h"
+#import "zoHukum-Swift.h"
 #import "MMTableViewController.h"
+#import "MBProgressHUD.h"
 #import "MMCollectionViewController.h"
-@interface ViewController (){
+
+
+@interface ViewController ()<UISearchBarDelegate>{
     NSMutableArray *arrCont;
     NSMutableDictionary *mainDesc;
+    int menuCount;
 }
 @property (nonatomic , strong ) MMContainerViewController *containerVC;
+@property (nonatomic, strong) UIBarButtonItem *searchItem;
+@property (nonatomic, strong) UISearchBar *searchBar;
+@property(strong,nonatomic) UINavigationBar *navigationBar;
+@property (nonatomic, strong) UIButton *searchButton;
+@property (nonatomic, strong) UIButton *sideMenuBtn;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setHidden:YES];
+    [self.navigationController.navigationBar setHidden:NO];
+    self.title =@"ZOHUKUM";
+    self.navigationController.navigationBar.barTintColor = [UIColor darkGrayColor];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationController.navigationBar.translucent = NO;
     
+    
+    self.sideMenuBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [self.sideMenuBtn setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
+    [self.sideMenuBtn addTarget:self action:@selector(toggleSideMenuView) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *toggleButton = [[UIBarButtonItem alloc] initWithCustomView:_sideMenuBtn];
+    self.navigationItem.rightBarButtonItem = toggleButton;
+    [self.navigationItem setLeftBarButtonItem:toggleButton];
+    
+    
+    self.searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [self.searchButton setImage:[UIImage imageNamed:@"wh_search"] forState:UIControlStateNormal];
+    [_searchButton addTarget:self action:@selector(searchButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.searchItem = [[UIBarButtonItem alloc] initWithCustomView:_searchButton];
+    self.navigationItem.rightBarButtonItem = _searchItem;
+    
+    self.searchBar = [[UISearchBar alloc] init];
+    self.searchBar.barTintColor = [UIColor redColor];
+    _searchBar.showsCancelButton = YES;
+    _searchBar.delegate = self;
+
+    menuCount = 0;
     mainDesc = [NSMutableDictionary new];
-    NSMutableDictionary *dic = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category",@"section",@"57",@"category", nil];
+    [self getSubcategory:_categoryName];
+    arrCont = [NSMutableArray new];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     
-    [self callXMLTrans2CgiWithPayload:@"get_sub_category" andDataArray:dic completion:^(NSMutableDictionary *responseDictionary){
-        NSMutableDictionary *loopValue = [NSMutableDictionary new];
-        arrCont = [NSMutableArray new];
-        NSMutableArray *arraID= [responseDictionary valueForKey:@"id"];
-        NSMutableArray *arratitle= [responseDictionary valueForKey:@"title"];
-        for (int i=0; i<arraID.count; i++) {
-            NSMutableDictionary *dic = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category_product",@"section",[NSString stringWithFormat:@"%@",[arraID objectAtIndex:i]],@"sub_cat_id", nil];
-            [self callXMLTrans2CgiWithPayload:@"get_sub_category_product" andDataArray:dic completion:^(NSMutableDictionary *responseDictionary){
-                // [loopValue setObject:responseDictionary forKey:[arraID objectAtIndex:i]];
-                NSLog(@"%@",loopValue);
-                //dispatch_async(dispatch_get_main_queue(), ^{
-                // Update the UI
-                
-                MMTableViewController *vc_one;
-                
-                NSMutableArray * loopValue2 = [responseDictionary valueForKey:@"title"];
-                NSLog(@"%@",loopValue2);
-                //for (int i=0; i<loopValue2.count-6; i++) {
-                vc_one = [self.storyboard instantiateViewControllerWithIdentifier:@"demo"];
-                vc_one.title =[arratitle objectAtIndex:i];
-                vc_one.logoColor = @"4caf50";
-                vc_one.logoImage = @"highlights";
-                vc_one.tableViewdataArray=loopValue2;
-                [arrCont addObject:vc_one];
-                //  }
-                //});
-            }];
-            
+    [UIView animateWithDuration:0.2f animations:^{
+        _searchBar.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        self.navigationItem.titleView = nil;
+        self.navigationItem.rightBarButtonItem = _searchItem;
+        _searchButton.alpha = 0.0;  // set this *after* adding it back
+        [UIView animateWithDuration:0.2f animations:^ {
+            _searchButton.alpha = 1.0;
+        }];
+    }];
+    
+}
+- (void)searchButtonTapped:(id)sender {
+    
+    [UIView animateWithDuration:0.0 animations:^{
+        _searchButton.alpha = 0.0f;
+        
+    } completion:^(BOOL finished) {
+        
+        // remove the search button
+        self.navigationItem.rightBarButtonItem = nil;
+        // add the search bar (which will start out hidden).
+        self.navigationItem.titleView = _searchBar;
+        _searchBar.alpha = 0.0;
+        for (UIView *view in _searchBar.subviews)
+        {
+            for (id subview in view.subviews)
+            {
+                if ( [subview isKindOfClass:[UIButton class]] )
+                {
+                    UIButton* cancelBtn = (UIButton*)subview;
+                    cancelBtn.frame=CGRectMake(0, 0, 30, 30);
+                    [cancelBtn setTitle:@"" forState:UIControlStateNormal];
+                    [cancelBtn setImage:[UIImage imageNamed:@"crossSearch"] forState:UIControlStateNormal];
+                    [cancelBtn setEnabled:YES];
+                    break;
+                }
+            }
         }
+        
+        UITextField *txfSearchField = [_searchBar valueForKey:@"_searchField"];
+        [txfSearchField setTextColor:[UIColor whiteColor]];
+        [txfSearchField setFont:[UIFont fontWithName:@"System" size:22]];
+        txfSearchField.placeholder=@"Product/Category...";
+        [txfSearchField setBackgroundColor:[UIColor clearColor]];
+        
+        [UIView animateWithDuration:0.0
+                         animations:^{
+                             _searchBar.alpha = 1.0;
+                         } completion:^(BOOL finished) {
+                             [_searchBar becomeFirstResponder];
+                         }];
+        
+    }];
+}
+
+-(void)getSubcategory:(NSString *)type{
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading..";
+    if([type isEqualToString:@"Special Brands"]){
+        NSMutableDictionary *sendtoServerzGetSubCategoryRequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_special_brand",@"section", nil];
+        [APIManager apiManager].delegate = self;
+        [[APIManager apiManager] GetSpecialBrandDetailsbyCatIDSendToServer:sendtoServerzGetSubCategoryRequestData];
+        
+    }else{
+        NSMutableDictionary *sendtoServerzGetSubCategoryRequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category",@"section",_categoryID,@"category", nil];
+        [APIManager apiManager].delegate = self;
+        [[APIManager apiManager] GetSubCategoryDetailsbyCatIDSendToServer:sendtoServerzGetSubCategoryRequestData];
+
+    }
+}
+
+-(void)getSubCategoryProduct:(NSMutableDictionary*)response{
+     NSMutableArray *subCategoryMenu      =  [response valueForKey:@"sub_category"];
+    [[NSUserDefaults standardUserDefaults]setObject:subCategoryMenu forKey:@"subCatMenulist"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+    NSMutableArray *subCategoryMenuID    =  [response valueForKey:@"id"];
+    for(int subCatID =0 ; subCatID<subCategoryMenuID.count ; subCatID++){
+        NSMutableDictionary *sendtoServerzGetSubCategoryProductRequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category_product",@"section",[NSString stringWithFormat:@"%@",[subCategoryMenuID objectAtIndex:subCatID]],@"sub_cat_id", nil];
+        [APIManager apiManager].delegate = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            [[APIManager apiManager] GetSubCategoryProductDetailsbySubCatIDSendToServer:sendtoServerzGetSubCategoryProductRequestData];
+        });
+    }
+   
+
+}
+-(void)CreatesubcategoryMenulist:(NSMutableDictionary *)response andmenuCount:(int)Count{
+    
+    NSMutableArray *responseDictionary = [[NSUserDefaults standardUserDefaults]valueForKey:@"subCatMenulist"];
+
+    MMTableViewController *vc_one;
+    vc_one = [self.storyboard instantiateViewControllerWithIdentifier:@"demo"];
+    vc_one.title =[responseDictionary objectAtIndex:Count];
+    vc_one.tittleTxt= _categoryName;
+    vc_one.logoColor = @"4caf50";
+    vc_one.logoImage = @"highlights";
+    vc_one.subCatMenuDetailsDesc=response;
+    [arrCont addObject:vc_one];
+        
+    if(Count==(responseDictionary.count)-1){
+         [MBProgressHUD hideHUDForView:self.view animated:YES];
         self.containerVC = [[MMContainerViewController alloc] initWithControllers:[arrCont mutableCopy] parentViewController:self];
         for (MMTableViewController*vc in arrCont) {
             if ([vc isKindOfClass: [MMTableViewController class]]){
                 vc.scrolldeleagte = self.containerVC ;
             }
         }
-        // self.containerVC.itemViewColorArray = @[@"4caf50",@"009688",@"673ab7",@"ff9800",@"9c27b0"];
+        self.containerVC.itemViewColorArray = @[@"4caf50",@"009688",@"673ab7",@"ff9800",@"9c27b0"];
         self.containerVC.menuItemFont = [UIFont fontWithName:@"Roboto-Medium" size:15];
         self.containerVC.menuIndicatorColor = [UIColor whiteColor];
         [self.view addSubview:self.containerVC.view];
-        
-    }];
-}
-
-
-- (void)callXMLTrans2CgiWithPayload:(NSString *)serviceIdenifier andDataArray:(NSMutableDictionary *)dic completion:(void (^)(NSMutableDictionary * finised))completion {
-    NSString * post;
-    //    NSMutableDictionary *dic = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_main_category",@"section", nil];
-    int count =0;
-    NSMutableString *str2= [NSMutableString new];
-    for(NSString *dataValue in [dic allKeys]){
-        post =[dataValue stringByAppendingString:[NSString stringWithFormat:@"=%@",[dic valueForKey:dataValue]]];
-        if(count>0){
-            
-            [str2 appendString:[NSString stringWithFormat:@"&%@",post]];
-        }else{
-            [str2 appendString:post];
-        }
-        
-        count++;
     }
     
-    NSData *postdata= [str2 dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-    NSString *postLength=[NSString stringWithFormat:@"%lu",(unsigned long)[postdata length]];
-    NSMutableURLRequest *request= [[NSMutableURLRequest alloc]init];
-    
-    NSString *str=@"https://www.zohukum.com/apps/";
-    [request setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.php",str,serviceIdenifier]]];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"Basic em9odWt1bTp6b2h1a3VtMTIz" forHTTPHeaderField:@"Authorization"];
-    [request setHTTPBody:postdata];
-    __block NSMutableDictionary * innerJson = [NSMutableDictionary new];
-    //  [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable _data, NSURLResponse * _Nullable _response, NSError * _Nullable _error) {
-    
-    NSURLResponse *response;
-    NSError *error;
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    innerJson = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
-    mainDesc = innerJson;
-    completion([mainDesc copy]);
-    NSLog(@"%@",mainDesc);
+}
+
+-(void)getResponse:(NSMutableDictionary *)response serviceIdentifier:(NSString *)serviceIdentifier {
+    if([serviceIdentifier isEqualToString:kAPIkeyGetSubCategory]){
+         dispatch_async(dispatch_get_main_queue(), ^{
+             
+             [self getSubCategoryProduct:response];
+             
+         });
+    }else if ([serviceIdentifier isEqualToString:kAPIkeyGetSubCategoryProduct]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self CreatesubcategoryMenulist:response andmenuCount:menuCount];
+            menuCount++;
+        });
+    }if([serviceIdentifier isEqualToString:kAPIkeyGetSpecialBrand]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self getSubCategoryProduct:response];
+            
+        });
+    }
     
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

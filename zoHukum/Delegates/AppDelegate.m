@@ -11,10 +11,15 @@
 // Name of your project + '-Swift.h'
 // There is no autocomplete while you typing
 // Go inside this class to understand how works swift code in the objc project
+
 #import "zohukum-Swift.h"
 
 #import "MenuItemsTVC.h"
 #import <GoogleSignIn/GoogleSignIn.h>
+#import "BuyerSliderMenu.h"
+#import "LeftViewController.h"
+#import "ExSlideMenuController.h"
+#import "UIColor+SlideMenuControllerOC.h"
 
 @import GoogleSignIn;
 @interface AppDelegate ()
@@ -23,23 +28,46 @@
 
 @implementation AppDelegate
 
+-(void)createMenuView {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    BuyerSliderMenu *mainViewController = (BuyerSliderMenu *)[storyboard instantiateViewControllerWithIdentifier:@"BuyerSliderMenu"];
+    
+    LeftViewController *leftViewController = (LeftViewController *)[storyboard instantiateViewControllerWithIdentifier:@"LeftViewController"];
+    
+    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:mainViewController];
+    [UINavigationBar appearance].tintColor = [UIColor colorFromHexString:@"689F38"];
+    
+    //leftViewController.mainViewControler = nvc;
+    
+    ExSlideMenuController *slideMenuController = [[ExSlideMenuController alloc] initWithMainViewController:nvc leftMenuViewController:leftViewController rightMenuViewController:nil];
+    slideMenuController.automaticallyAdjustsScrollViewInsets = YES;
+    slideMenuController.delegate = mainViewController;
+    self.window.backgroundColor = [UIColor colorWithRed:236.0 green:238.0 blue:241.0 alpha:1.0];
+    self.window.rootViewController = slideMenuController;
+    [self.window makeKeyWindow];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
    [GIDSignIn sharedInstance].clientID = kClientID;
+    int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+    if(userID>0){
+        [self createMenuView];
+    }else{
+        MenuItemsTVC *sideMenuTVC = [MenuItemsTVC new];
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        UIViewController *contentVC = [storyboard instantiateViewControllerWithIdentifier:@"ZHMainViewController"];
+        ENSideMenuNavigationController *navVC =[[ENSideMenuNavigationController alloc] initWithMenuViewController:sideMenuTVC contentViewController:contentVC];
+        
+        
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        [self.window setRootViewController:navVC];
+        [self.window makeKeyAndVisible];
+    }
+    
     
     // Override point for customization after application launch.
-    MenuItemsTVC *sideMenuTVC = [MenuItemsTVC new];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UIViewController *contentVC = [storyboard instantiateViewControllerWithIdentifier:@"ZHMainViewController"];
-    ENSideMenuNavigationController *navVC =[[ENSideMenuNavigationController alloc] initWithMenuViewController:sideMenuTVC contentViewController:contentVC];
-    
-
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window setRootViewController:navVC];
-    [self.window makeKeyAndVisible];
     
     NSError* configureError;
-    ///[[GGLContext sharedInstance] configureWithError: &configureError];
     NSAssert(!configureError, @"Error configuring Google services: %@", configureError);
     
     [GIDSignIn sharedInstance].delegate = self;

@@ -17,7 +17,8 @@
 #import "zhRegisterationViewController.h"
 
 
-@interface ZHMainViewController ()<UIScrollViewDelegate>@property (nonatomic, strong) UIButton *searchButton;
+@interface ZHMainViewController ()<UIScrollViewDelegate>
+@property (nonatomic, strong) UIButton *searchButton;
 @property (nonatomic, strong) UIBarButtonItem *searchItem;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property(nonatomic,strong)IBOutlet UIScrollView *scrollview;
@@ -240,6 +241,7 @@
 -(void)registeration:(id)sender{
     
     zhRegisterationViewController *storeRegisteration = [self.storyboard instantiateViewControllerWithIdentifier:@"zhRegisterationViewController"];
+    storeRegisteration.registerationType = @"CompanyRegisteration";
     [self.navigationController pushViewController:storeRegisteration animated:YES];
 }
 
