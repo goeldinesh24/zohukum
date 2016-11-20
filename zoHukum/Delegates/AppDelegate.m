@@ -20,6 +20,7 @@
 #import "LeftViewController.h"
 #import "ExSlideMenuController.h"
 #import "UIColor+SlideMenuControllerOC.h"
+#import "zhRegisterationViewController.h"
 
 @import GoogleSignIn;
 @interface AppDelegate ()
@@ -47,21 +48,50 @@
     [self.window makeKeyWindow];
 }
 
+-(void)createProfileView {
+    NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:@"responsedesc"];
+    NSMutableDictionary *savedDICT = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    
+    NSString *registerationType = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]valueForKey:@"registerationType"]];
+
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    zhRegisterationViewController *mainViewController = (zhRegisterationViewController *)[storyboard instantiateViewControllerWithIdentifier:@"zhRegisterationViewController"];
+    mainViewController.registerationType = registerationType;
+    mainViewController.userInfoFromResponse = savedDICT;
+    LeftViewController *leftViewController = (LeftViewController *)[storyboard instantiateViewControllerWithIdentifier:@"LeftViewController"];
+    
+    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:mainViewController];
+    [UINavigationBar appearance].tintColor = [UIColor colorFromHexString:@"689F38"];
+    
+    //leftViewController.mainViewControler = nvc;
+    
+    ExSlideMenuController *slideMenuController = [[ExSlideMenuController alloc] initWithMainViewController:nvc leftMenuViewController:leftViewController rightMenuViewController:nil];
+    slideMenuController.automaticallyAdjustsScrollViewInsets = YES;
+    slideMenuController.delegate = mainViewController;
+    self.window.backgroundColor = [UIColor colorWithRed:236.0 green:238.0 blue:241.0 alpha:1.0];
+    self.window.rootViewController = slideMenuController;
+    [self.window makeKeyWindow];
+}
+
+-(void)createMenuViewWithoutLogin{
+    MenuItemsTVC *sideMenuTVC = [MenuItemsTVC new];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIViewController *contentVC = [storyboard instantiateViewControllerWithIdentifier:@"ZHMainViewController"];
+    ENSideMenuNavigationController *navVC =[[ENSideMenuNavigationController alloc] initWithMenuViewController:sideMenuTVC contentViewController:contentVC];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window setRootViewController:navVC];
+    [self.window makeKeyAndVisible];
+
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
    [GIDSignIn sharedInstance].clientID = kClientID;
     int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
     if(userID>0){
         [self createMenuView];
     }else{
-        MenuItemsTVC *sideMenuTVC = [MenuItemsTVC new];
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        UIViewController *contentVC = [storyboard instantiateViewControllerWithIdentifier:@"ZHMainViewController"];
-        ENSideMenuNavigationController *navVC =[[ENSideMenuNavigationController alloc] initWithMenuViewController:sideMenuTVC contentViewController:contentVC];
-        
-        
-        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        [self.window setRootViewController:navVC];
-        [self.window makeKeyAndVisible];
+        [self createMenuViewWithoutLogin];
     }
     
     

@@ -13,5 +13,7 @@
 
 @property(strong,nonatomic)NSString *categoryID;
 @property(strong,nonatomic)NSString *categoryName;
+@property(strong,nonatomic)IBOutlet UILabel *marketPrice;
+@property(strong,nonatomic)IBOutlet UILabel *productQuantity;
 @end
 

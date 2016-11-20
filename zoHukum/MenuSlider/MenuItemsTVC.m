@@ -172,101 +172,96 @@
     UIViewController *destTVC = nil;
     MultiSupportWebViewController *multisupportView=nil;
     ViewController *MenuDetailsViewController=nil;
-    switch (indexPath.row) {
-        case 0:
+    if(indexPath.row <=_topListofMenuItemsID.count-1){
+        for(int i =0 ; i<_topListofMenuItemsID.count; i++){
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
             MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
-            break;
-        case 1:
+        }
+    }else{
+        
+        if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Special Brands"]){
+            
+//            int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+//            if(userID>0){
+//                destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];[self.sideMenuController setContentViewController:destTVC];
+//            }else{
+//                
+//            }
             MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
-             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
-            [self.sideMenuController setContentViewController:MenuDetailsViewController];
-            break;
-        case 2:
-            MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
-             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
-            [self.sideMenuController setContentViewController:MenuDetailsViewController];
-            break;
-        case 3:
-            MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
-             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
-            [self.sideMenuController setContentViewController:MenuDetailsViewController];
-            break;
-        case 4:
-            MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
-             MenuDetailsViewController.categoryName = [_topListofMenuItems objectAtIndex:indexPath.row];
-            [self.sideMenuController setContentViewController:MenuDetailsViewController];
-            break;
-        case 5:
-            MenuDetailsViewController = [storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            //MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
+           // MenuDetailsViewController.categoryID = [_topListofMenuItemsID objectAtIndex:indexPath.row];
             MenuDetailsViewController.categoryName = [_listofMenuItems objectAtIndex:indexPath.row];
             [self.sideMenuController setContentViewController:MenuDetailsViewController];
-            break;
-        case 6:
-            destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];[self.sideMenuController setContentViewController:destTVC];
-            break;
-        case 7:
+            
+        }else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Refer Store"]){
+            int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+            if(userID>0){
+                destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];[self.sideMenuController setContentViewController:destTVC];
+            }else{
+                
+            }
+        }else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Advert Request"]){
+            int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+            if(userID>0){
+                destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];[self.sideMenuController setContentViewController:destTVC];
+            }else{
+                
+            }
+        }else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Tell Friend"]){
+            int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+            if(userID>0){
+                destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];[self.sideMenuController setContentViewController:destTVC];
+            }else{
+                
+            }
+        }else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Contact Us"]){
             destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];
             [self.sideMenuController setContentViewController:destTVC];
-            break;
-        case 8:
-            destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];
-            break;
-        case 9:
-            destTVC = [storyboard instantiateViewControllerWithIdentifier:@"zhContactUsViewController"];
-            [self.sideMenuController setContentViewController:destTVC];
-            break;
-        case 10:
+        }
+        else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"News"]){
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-latest-news.html";
             multisupportView.navigationTittleString = @"latest-news";
             [self.sideMenuController setContentViewController:multisupportView];
-            break;
-        case 11:
+        }
+        else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"How it works"]){
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-how-it-works.html";
             multisupportView.navigationTittleString = @"How it works";
-            [self.sideMenuController setContentViewController:multisupportView];
-            break;
-        case 12:
+            [self.sideMenuController setContentViewController:multisupportView];        }
+        else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Shipping and Returns"]){
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-shipping-return.html";
             multisupportView.navigationTittleString = @"Shipping and returns";
             [self.sideMenuController setContentViewController:multisupportView];
-            break;
-        case 13:
+        }
+        else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Privacy Policy"]){
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-Privacy-Policy-7.html";
             multisupportView.navigationTittleString = @"Privacy Policy";
             [self.sideMenuController setContentViewController:multisupportView];
-            break;
-        case 14:
+        }
+        else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"Terms & Condition"]){
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-Terms-and-Conditions-5.html";
             multisupportView.navigationTittleString = @"Terms & Condition";
             [self.sideMenuController setContentViewController:multisupportView];
-            break;
-        case 15:
+
+        }
+        else if([[NSString stringWithFormat:@"%@",[_listofMenuItems objectAtIndex:indexPath.row]]isEqualToString:@"FAQ"]){
             multisupportView = [storyboard instantiateViewControllerWithIdentifier:@"MultiSupportWebViewController"];
             multisupportView.pageUrl                = @"https://www.zohukum.com/mobile-faq.html";
             multisupportView.navigationTittleString = @"Frequently asked question";
             [self.sideMenuController setContentViewController:multisupportView];
-            break;
-        case 16:
-            exit(0);
-            break;
-        default:
-            destTVC = [storyboard instantiateViewControllerWithIdentifier:@"ViewController2"];
-            [self.sideMenuController setContentViewController:destTVC];
-            break;
+        }else{
+             exit(0);
+        }
+
+        
     }
+    
+    
     
 }
 

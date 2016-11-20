@@ -14,5 +14,6 @@
 @property(strong,nonatomic)IBOutlet MKTextField *Otptxt;
 @property(strong,nonatomic)IBOutlet UIButton *otpSender;
 @property(strong,nonatomic)IBOutlet UIButton *checkBox;
+@property(strong,nonatomic)IBOutlet UILabel *decsText;
 
 @end

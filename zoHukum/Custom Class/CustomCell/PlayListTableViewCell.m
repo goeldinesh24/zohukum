@@ -28,5 +28,20 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 }
+-(IBAction)increaseQuantityOfSelectedProduct:(id)sender{
+    int incrementedValue;
+    if([_quantityOfSelectediTem.text intValue]>=0){
+        incrementedValue =[_quantityOfSelectediTem.text intValue]+1;
+        _quantityOfSelectediTem.text = [NSString stringWithFormat:@"%d",incrementedValue];
+       }
+}
+-(IBAction)decreaseQuantityOfSelectedProduct:(id)sender{
+    int decrementedValue;
+    if([_quantityOfSelectediTem.text intValue]>0){
+        decrementedValue =[_quantityOfSelectediTem.text intValue]-1;
+        _quantityOfSelectediTem.text = [NSString stringWithFormat:@"%d",decrementedValue];
+        
+    }
+}
 
 @end

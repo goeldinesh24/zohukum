@@ -20,8 +20,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    //    datasource = @[@"ONE",@"TWO",@"THREE",@"FOUR",@"FIVE",@"SIX",@"SEVEN",@"EIGHT",@"NINE",@"TEN",@"ONE",@"ONE",@"TWO",@"THREE",@"FOUR",@"FIVE",@"SIX",@"SEVEN",@"EIGHT",@"NINE",@"TEN",@"ONE"];
+    
     self.view.backgroundColor = [UIColor clearColor];
     datasource = @[@"ironman.jpg",@"worldbg.jpg",@"sportsbg.jpg",@"applebg.png",@"businessbg.jpg"];
     _tableView = [[UITableView alloc] initWithFrame:self.view.frame];

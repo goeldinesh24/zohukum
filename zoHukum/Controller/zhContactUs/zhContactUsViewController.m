@@ -10,7 +10,10 @@
 #import "CustomContactCell.h"
 #import "CustomTextFieldCell.h"
 #import "ZHMainViewController.h"
-
+#import "UITableView+SlideMenuControllerOC.h"
+#import "UIViewController+SlideMenuControllerOC.h"
+#import "APIManager.h"
+#import "ViewController.h"
 @interface zhContactUsViewController ()
 {
     NSMutableArray      *textfieldPlaceholdertxt;
@@ -23,7 +26,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.navigationController.navigationBar setHidden:YES];
+   
     textfieldValue          = [NSMutableDictionary new];
     textfieldPlaceholdertxt = [[NSMutableArray alloc]initWithObjects:@"",@"Name",@"Email id",@"Subject",@"Message", nil];
     
@@ -33,6 +36,20 @@
     
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+    int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+    if(userID>0){
+        self.view.backgroundColor = [UIColor whiteColor];
+        [self.navigationController.navigationBar setHidden:NO];
+        self.view.backgroundColor = [UIColor whiteColor];
+        _headerView.hidden=YES;
+        [self setNavigationBarItem];
+    }else{
+         [self.navigationController.navigationBar setHidden:YES];
+        self.view.backgroundColor = [UIColor darkGrayColor];
+    }
+}
 -(IBAction)backtoCurrentViewController:(id)sender{
     ZHMainViewController  *homeView = [self.storyboard instantiateViewControllerWithIdentifier:@"ZHMainViewController"];
     

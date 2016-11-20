@@ -9,10 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "NIDropDown.h"
 #import "APIManager.h"
-@interface zhRegisterationViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,NIDropDownDelegate,UITextFieldDelegate,ZHApiManagerDelegate>{
+#import "SlideMenuController.h"
+
+@interface zhRegisterationViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,NIDropDownDelegate,UITextFieldDelegate,ZHApiManagerDelegate, SlideMenuControllerDelegate>{
      NIDropDown *dropDown;
    
 }
+@property(strong,nonatomic)IBOutlet UILabel *lblText;
+@property(strong,nonatomic)IBOutlet UIButton *checkBox;
 @property(strong,nonatomic)IBOutlet UITableView *registerationTableView;
 @property(strong,nonatomic)IBOutlet NSMutableDictionary *userInfoFromResponse;
 @property(strong,nonatomic)IBOutlet UITextField *mobileNo;

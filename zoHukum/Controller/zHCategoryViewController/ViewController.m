@@ -12,6 +12,8 @@
 #import "MMTableViewController.h"
 #import "MBProgressHUD.h"
 #import "MMCollectionViewController.h"
+#import "TWMessageBarManager.h"
+#import "QueryDetailsViewController.h"
 
 
 @interface ViewController ()<UISearchBarDelegate>{
@@ -38,11 +40,18 @@
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.navigationController.navigationBar.translucent = NO;
     
-    
-    self.sideMenuBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [self.sideMenuBtn setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
-    [self.sideMenuBtn addTarget:self action:@selector(toggleSideMenuView) forControlEvents:UIControlEventTouchUpInside];
-    
+    int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+    if(userID>0){
+        self.sideMenuBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        [self.sideMenuBtn setImage:[UIImage imageNamed:@"arrow-left"] forState:UIControlStateNormal];
+        [self.sideMenuBtn addTarget:self action:@selector(backViewController) forControlEvents:UIControlEventTouchUpInside];
+        
+    }else{
+        self.sideMenuBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        [self.sideMenuBtn setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
+        [self.sideMenuBtn addTarget:self action:@selector(toggleSideMenuView) forControlEvents:UIControlEventTouchUpInside];
+        
+    }
     UIBarButtonItem *toggleButton = [[UIBarButtonItem alloc] initWithCustomView:_sideMenuBtn];
     self.navigationItem.rightBarButtonItem = toggleButton;
     [self.navigationItem setLeftBarButtonItem:toggleButton];
@@ -64,6 +73,31 @@
     mainDesc = [NSMutableDictionary new];
     [self getSubcategory:_categoryName];
     arrCont = [NSMutableArray new];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveTestNotification:)
+                                                 name:@"updateCartProduct"
+                                               object:nil];
+    
+}
+
+- (void) receiveTestNotification:(NSNotification *) notification
+{
+    // [notification name] should always be @"TestNotification"
+    // unless you use this method for observation of other notifications
+    // as well.
+    // NSDictionary *userInfo = notification.userInfo;
+    NSDictionary *userInfo =   [(NSDictionary*)notification.object valueForKey:@"updateCartProductDetails"];
+    NSLog(@"%@",userInfo);
+    _marketPrice.text = [NSString stringWithFormat:@"Rs.%@",[userInfo valueForKey:@"Total_market_price"]];
+    _productQuantity.text = [NSString stringWithFormat:@"Quantity : %@",[userInfo valueForKey:@"Total_qty"]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:[userInfo valueForKey:@"message"] description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+    });
+    
+}
+
+-(void)backViewController{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -141,19 +175,36 @@
 }
 
 -(void)getSubCategoryProduct:(NSMutableDictionary*)response{
-     NSMutableArray *subCategoryMenu      =  [response valueForKey:@"sub_category"];
-    [[NSUserDefaults standardUserDefaults]setObject:subCategoryMenu forKey:@"subCatMenulist"];
-    [[NSUserDefaults standardUserDefaults]synchronize];
-    NSMutableArray *subCategoryMenuID    =  [response valueForKey:@"id"];
-    for(int subCatID =0 ; subCatID<subCategoryMenuID.count ; subCatID++){
-        NSMutableDictionary *sendtoServerzGetSubCategoryProductRequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category_product",@"section",[NSString stringWithFormat:@"%@",[subCategoryMenuID objectAtIndex:subCatID]],@"sub_cat_id", nil];
-        [APIManager apiManager].delegate = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
+    if([_categoryName isEqualToString:@"Special Brands"]){
+        NSMutableArray *subCategoryMenu      =  [response valueForKey:@"value"];
+        [[NSUserDefaults standardUserDefaults]setObject:subCategoryMenu forKey:@"subCatMenulist"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        NSMutableArray *subCategoryMenuID    =  [response valueForKey:@"id"];
+        for(int subCatID =0 ; subCatID<subCategoryMenuID.count ; subCatID++){
+            NSMutableDictionary *sendtoServerzGetSubCategoryProductRequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category_product",@"section",[NSString stringWithFormat:@"%@",[subCategoryMenuID objectAtIndex:subCatID]],@"sub_cat_id", nil];
+            [APIManager apiManager].delegate = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [[APIManager apiManager] GetSubCategoryProductDetailsbySubCatIDSendToServer:sendtoServerzGetSubCategoryProductRequestData];
+            });
+        }
 
-            [[APIManager apiManager] GetSubCategoryProductDetailsbySubCatIDSendToServer:sendtoServerzGetSubCategoryProductRequestData];
-        });
+    }else{
+        NSMutableArray *subCategoryMenu      =  [response valueForKey:@"sub_category"];
+        [[NSUserDefaults standardUserDefaults]setObject:subCategoryMenu forKey:@"subCatMenulist"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        NSMutableArray *subCategoryMenuID    =  [response valueForKey:@"id"];
+        for(int subCatID =0 ; subCatID<subCategoryMenuID.count ; subCatID++){
+            NSMutableDictionary *sendtoServerzGetSubCategoryProductRequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"get_sub_category_product",@"section",[NSString stringWithFormat:@"%@",[subCategoryMenuID objectAtIndex:subCatID]],@"sub_cat_id", nil];
+            [APIManager apiManager].delegate = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [[APIManager apiManager] GetSubCategoryProductDetailsbySubCatIDSendToServer:sendtoServerzGetSubCategoryProductRequestData];
+            });
+        }
+ 
     }
-   
+    
 
 }
 -(void)CreatesubcategoryMenulist:(NSMutableDictionary *)response andmenuCount:(int)Count{
@@ -181,6 +232,18 @@
         self.containerVC.menuItemFont = [UIFont fontWithName:@"Roboto-Medium" size:15];
         self.containerVC.menuIndicatorColor = [UIColor whiteColor];
         [self.view addSubview:self.containerVC.view];
+        
+        UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width-130, self.view.frame.size.height-130, 50, 50)];
+        button.backgroundColor =[UIColor redColor];
+        button.layer.cornerRadius =button.frame.size.width/2;
+        button.layer.masksToBounds = YES;
+        [self.view addSubview:button];
+        UIButton *testbutton = [[UIButton alloc]initWithFrame:CGRectMake(10, 10, 30, 30)];
+        testbutton.backgroundColor =[UIColor redColor];
+        [testbutton setImage:[UIImage imageNamed:@"filter_icon"] forState:UIControlStateNormal];
+        [testbutton addTarget:self action:@selector(createPopUpView:) forControlEvents:UIControlEventTouchUpInside];
+        [button addSubview:testbutton];
+        [self.view addSubview:button];
     }
     
 }
@@ -204,8 +267,30 @@
             [self getSubCategoryProduct:response];
             
         });
+    }if([serviceIdentifier isEqualToString:kAPIkeyCartDetails]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[response mutableCopy]forKey:@"updateCartProductDetails"];
+            
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"updateCartProduct" object:userInfo];
+            
+        });
     }
     
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+    int userID = [[[NSUserDefaults standardUserDefaults]valueForKey:@"USER_ID"] intValue];
+    
+    NSMutableDictionary *sendtoserverrequestData = [[NSMutableDictionary alloc]init];
+    [sendtoserverrequestData setObject:@"cart_detail" forKey:@"section"];
+    [sendtoserverrequestData setObject:[NSString stringWithFormat:@"%d",userID] forKey:@"user_id"];
+    [APIManager apiManager].delegate = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[APIManager apiManager] CartProductaDetailsfromServer:sendtoserverrequestData];
+    });
+
 }
 
 

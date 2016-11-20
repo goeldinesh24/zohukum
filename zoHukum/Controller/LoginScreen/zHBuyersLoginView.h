@@ -15,7 +15,7 @@
 @import GoogleSignIn;
 @interface zHBuyersLoginView : UIViewController<ZHApiManagerDelegate>
 @property(weak, nonatomic) IBOutlet GIDSignInButton *signInButton;
-
+@property (strong, nonatomic) UIWindow *window;
 -(IBAction)forgetPasswordPopUp:(id)sender;
 // A label to display the result of the sign-in action.
 @end

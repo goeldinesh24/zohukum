@@ -15,6 +15,15 @@
 @property (weak, nonatomic) IBOutlet UIView *middleView;
 @property (weak, nonatomic) IBOutlet UILabel *weight;
 @property (weak, nonatomic) IBOutlet UIButton *price;
+@property (weak, nonatomic) IBOutlet UIButton *minus;
+@property (weak, nonatomic) IBOutlet UIButton *plus;
 @property (weak, nonatomic) IBOutlet UILabel *type;
 @property (weak, nonatomic) IBOutlet UILabel *brand;
+@property (weak, nonatomic) IBOutlet UIButton *addtoCartProduct;
+@property (weak, nonatomic) IBOutlet UIButton *buyListProduct;
+@property (weak, nonatomic) IBOutlet UIView *plusMinusView;
+@property (weak, nonatomic) IBOutlet UITextField *quantityOfSelectediTem;
+-(IBAction)increaseQuantityOfSelectedProduct:(id)sender;
+-(IBAction)decreaseQuantityOfSelectedProduct:(id)sender;
+
 @end

@@ -21,7 +21,9 @@
 
 extern BOOL connectionAvalablity;
 +(BOOL)connectedToNetwork;
-
+-(void)createProfileView;
+-(void)createMenuViewWithoutLogin;
+-(void)createMenuView;
 
 @end
 

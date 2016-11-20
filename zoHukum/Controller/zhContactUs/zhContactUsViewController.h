@@ -10,5 +10,6 @@
 
 @interface zhContactUsViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate>
 @property(strong,nonatomic)IBOutlet UITableView *contactTblView;
+@property(strong,nonatomic)IBOutlet UIView *headerView;
 -(IBAction)backtoCurrentViewController:(id)sender;
 @end

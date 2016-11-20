@@ -13,11 +13,15 @@
 #import "CustomAlertView.h"
 #import "TWMessageBarManager.h"
 #import "MBProgressHUD.h"
+#import "LeftViewController.h"
+#import "ExSlideMenuController.h"
+#import "UIColor+SlideMenuControllerOC.h"
 
 typedef void(^AlertViewActionBlock)(void);
 @interface zHBuyersLoginView ()<GIDSignInUIDelegate,GIDSignInDelegate>{
     NSMutableArray *fbDetailsArray;
     NSString       *loginType;
+    NSMutableDictionary *userGoogleDetails;
 }
 @property (nonatomic, copy) void (^confirmActionBlock)(void);
 @property (nonatomic, copy) void (^cancelActionBlock)(void);
@@ -27,6 +31,7 @@ typedef void(^AlertViewActionBlock)(void);
 
 -(IBAction)signInwithGoogle:(id)sender;
 -(IBAction)signInwithfacebook:(id)sender;
+-(IBAction)signInwithUserNameAndEmailID:(id)sender;
 -(IBAction)newRegisterationWithStore:(id)sender;
 
 @end
@@ -75,6 +80,7 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
 }
 
 -(IBAction)signInwithfacebook:(id)sender{
+    loginType = @"Facebook";
     MBProgressHUD *loginwait = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     loginwait.labelText = @"Please Wait...";
     
@@ -116,9 +122,26 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
         }];
 
     });
-    
 }
 
+-(IBAction)signInwithUserNameAndEmailID:(id)sender{
+    if([_userName.text isEqualToString:@""] && [_userPassword.text isEqualToString:@""]){
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Plese enter Valid Registered UserName & Password" description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+    }else if ([_userName.text isEqualToString:@""]){
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Plese enter Valid Registered UserName" description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+    }else if([_userPassword.text isEqualToString:@""]){
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Plese enter Valid Password" description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+    }else{
+        MBProgressHUD *loginwait = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        loginwait.labelText = @"Please Wait...";
+        NSMutableDictionary *sendtoserverrequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"check_email_pass_user",@"section",_userName.text,@"email",_userPassword.text,@"password",@"buyer",@"user_type", nil];
+        
+        [APIManager apiManager].delegate = self;
+        [[APIManager apiManager] loginWithDetailsfromServer:sendtoserverrequestData];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }
+   
+}
 
 -(void)callRegisterationdetailsBySocial:(NSMutableDictionary *)result{
    
@@ -128,31 +151,57 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
         [APIManager apiManager].delegate = self;
         [[APIManager apiManager] GoogleloginWithDetailsfromServer:sendtoserverrequestData];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }else{
+    }else if([loginType isEqualToString:@"Facebook"]){
         NSMutableDictionary *sendtoserverrequestData = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"login_via_facebook",@"section",[result valueForKey:@"email"],@"email",[result valueForKey:@"id"],@"user_id",[result valueForKey:@"first_name"],@"fname",[result valueForKey:@"last_name"],@"lname",[result valueForKey:@"gender"],@"gender",[result valueForKey:@"name"],@"user_name",@"20/12/1988",@"birthday", nil];
         
         [APIManager apiManager].delegate = self;
         [[APIManager apiManager] fbloginWithDetailsfromServer:sendtoserverrequestData];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
+
     }
     
 }
 -(void)getResponse:(NSMutableDictionary *)response serviceIdentifier:(NSString *)serviceIdentifier {
    dispatch_async(dispatch_get_main_queue(), ^{
-    [[TWMessageBarManager sharedInstance] showMessageWithTitle:[response valueForKey:@"message"] description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
-       [[NSUserDefaults standardUserDefaults]setValue:[response valueForKey:@"USER_ID"] forKey:@"USER_ID"];
-       [[NSUserDefaults standardUserDefaults]synchronize];
-       [self updateUserProfile:response];
+       [MBProgressHUD hideHUDForView:self.view animated:YES];
+        if([loginType isEqualToString:@"Facebook"]){
+            [[TWMessageBarManager sharedInstance] showMessageWithTitle:[response valueForKey:@"message"] description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+            if([[NSString stringWithFormat:@"%@",[response valueForKey:@"message"]]isEqualToString:@"Success"]){
+                [[NSUserDefaults standardUserDefaults]setValue:[response valueForKey:@"USER_ID"] forKey:@"USER_ID"];
+                [[NSUserDefaults standardUserDefaults]synchronize];
+                [self updateUserProfile:userGoogleDetails];
+            }
+        }else if([loginType isEqualToString:@"Facebook"]){
+            [[TWMessageBarManager sharedInstance] showMessageWithTitle:[response valueForKey:@"message"] description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+            if([[NSString stringWithFormat:@"%@",[response valueForKey:@"message"]]isEqualToString:@"Success"]){
+                [[NSUserDefaults standardUserDefaults]setValue:[response valueForKey:@"USER_ID"] forKey:@"USER_ID"];
+                [[NSUserDefaults standardUserDefaults]synchronize];
+                [self updateUserProfile:userGoogleDetails];
+            }
+        }else{
+            [[TWMessageBarManager sharedInstance] showMessageWithTitle:[response valueForKey:@"message"] description:nil type:TWMessageBarMessageTypeSuccess statusBarStyle:[UIApplication sharedApplication].statusBarStyle callback:nil];
+            if([[NSString stringWithFormat:@"%@",[response valueForKey:@"message"]]isEqualToString:@"Success"]){
+                [[NSUserDefaults standardUserDefaults]setValue:[response valueForKey:@"USER_ID"] forKey:@"USER_ID"];
+                [[NSUserDefaults standardUserDefaults]synchronize];
+                AppDelegate *appDel = (AppDelegate *)[UIApplication sharedApplication].delegate;
+                [appDel createMenuView];
+            }
+        }
+       
+       
    });
     NSLog(@"response%@",response);
 }
 
 -(void)updateUserProfile:(NSMutableDictionary *)responsedesc{
-    zhRegisterationViewController *storeRegisteration = [self.storyboard instantiateViewControllerWithIdentifier:@"zhRegisterationViewController"];
-    storeRegisteration.registerationType = @"UpdateProfile";
-    storeRegisteration.userInfoFromResponse = responsedesc;
-    [self.navigationController pushViewController:storeRegisteration animated:YES];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+     NSData *dataSave = [NSKeyedArchiver archivedDataWithRootObject:responsedesc];
+    [[NSUserDefaults standardUserDefaults]setObject:dataSave forKey:@"responsedesc"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+
+    [[NSUserDefaults standardUserDefaults]setObject:@"UpdateProfile" forKey:@"registerationType"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+       AppDelegate *appDel = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    [appDel createProfileView];
 }
 
 - (void)getFailResponse:(NSError *)errObj serviceIdentifier:(NSString *)serviceIdentifier {
@@ -205,7 +254,7 @@ static NSString *const kCredentialsButtonAccessibilityIdentifier = @"Credentials
     NSString *familyName = user.profile.familyName;
     NSString *email = user.profile.email;
     NSURL *url = [user.profile imageURLWithDimension:100];
-    NSMutableDictionary *userGoogleDetails = [[NSMutableDictionary alloc]initWithObjectsAndKeys:userId,@"userId",fullName,@"fullName",email,@"email",idToken,@"idToken",givenName,@"fname",url,@"url",familyName,@"lname",nil];
+    userGoogleDetails = [[NSMutableDictionary alloc]initWithObjectsAndKeys:userId,@"userId",fullName,@"fullName",email,@"email",idToken,@"idToken",givenName,@"fname",url,@"url",familyName,@"lname",nil];
     [self callRegisterationdetailsBySocial:userGoogleDetails];
     
 }
